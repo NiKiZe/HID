@@ -24,35 +24,53 @@ THE SOFTWARE.
 // Include guard
 #pragma once
 
-// Software version
-#define HID_PROJECT_VERSION 243
+#include <Arduino.h>
+#include "HID-Settings.h"
 
-#if ARDUINO < 10607
-#error HID Project requires Arduino IDE 1.6.7 or greater. Please update your IDE.
-#endif
+#define TIP_SWITCH		(1 << 0)
+#define IN_RANGE		(1 << 1)
 
-#if !defined(USBCON)
-#error HID Project can only be used with an USB MCU.
-#endif
+// TIP_SWITCH is an activated on a finger press.  Some digitizers have the capability to detect
+// when a tool (pen, finger) is in range, hence the IN_RANGE usage.  It must be activated for
+// a touch to register. 
+#define TOUCH_ALL (TIP_SWITCH | IN_RANGE)
 
-// Include all HID libraries (.a linkage required to work) properly
-#include "SingleReport/SingleAbsoluteMouse.h"
-#include "MultiReport/AbsoluteMouse.h"
-#include "SingleReport/BootMouse.h"
-#include "MultiReport/ImprovedMouse.h"
-#include "SingleReport/SingleConsumer.h"
-#include "MultiReport/Consumer.h"
-#include "SingleReport/SingleGamepad.h"
-#include "MultiReport/Gamepad.h"
-#include "SingleReport/SingleSystem.h"
-#include "MultiReport/System.h"
-#include "SingleReport/RawHID.h"
-#include "SingleReport/BootKeyboard.h"
-#include "MultiReport/ImprovedKeyboard.h"
-#include "SingleReport/SingleNKROKeyboard.h"
-#include "MultiReport/NKROKeyboard.h"
-#include "SingleReport/SingleDigitizer.h"
-#include "MultiReport/Digitizer.h"
 
-// Include Teensy HID afterwards to overwrite key definitions if used
-// TODO include Teensy API if non english keyboard layout was used
+typedef union{
+	// Digitizer report: touch, 2 absolute axis
+	uint8_t whole8[];
+	uint16_t whole16[];
+	uint32_t whole32[];
+	struct{
+		uint8_t touch;
+		int16_t xAxis;
+		int16_t yAxis;
+	};
+} HID_DigitizerReport_Data_t;
+
+
+class DigitizerAPI
+{
+protected:
+	uint16_t xAxis;
+	uint16_t yAxis;
+	uint8_t _touch;
+	
+public:
+	inline DigitizerAPI(void);
+	inline void begin(void);
+	inline void end(void);
+
+	inline void click(uint8_t t = TOUCH_ALL);
+	inline void moveTo(int x, int y, uint8_t t = TOUCH_ALL);
+	inline void press();
+	inline void release();
+	inline bool isPressed();
+	
+	// Sending is public in the base class for advanced users.
+	virtual void SendReport(void* data, int length) = 0;
+};
+
+// Implementation is inline
+#include "DigitizerAPI.hpp"
+

@@ -24,35 +24,54 @@ THE SOFTWARE.
 // Include guard
 #pragma once
 
-// Software version
-#define HID_PROJECT_VERSION 243
 
-#if ARDUINO < 10607
-#error HID Project requires Arduino IDE 1.6.7 or greater. Please update your IDE.
-#endif
 
-#if !defined(USBCON)
-#error HID Project can only be used with an USB MCU.
-#endif
+DigitizerAPI::DigitizerAPI(void): 
+xAxis(0), yAxis(0), _touch(0)
+{
+	// Empty
+}
 
-// Include all HID libraries (.a linkage required to work) properly
-#include "SingleReport/SingleAbsoluteMouse.h"
-#include "MultiReport/AbsoluteMouse.h"
-#include "SingleReport/BootMouse.h"
-#include "MultiReport/ImprovedMouse.h"
-#include "SingleReport/SingleConsumer.h"
-#include "MultiReport/Consumer.h"
-#include "SingleReport/SingleGamepad.h"
-#include "MultiReport/Gamepad.h"
-#include "SingleReport/SingleSystem.h"
-#include "MultiReport/System.h"
-#include "SingleReport/RawHID.h"
-#include "SingleReport/BootKeyboard.h"
-#include "MultiReport/ImprovedKeyboard.h"
-#include "SingleReport/SingleNKROKeyboard.h"
-#include "MultiReport/NKROKeyboard.h"
-#include "SingleReport/SingleDigitizer.h"
-#include "MultiReport/Digitizer.h"
+void DigitizerAPI::begin(void){
+	// release all buttons
+	end();
+}
 
-// Include Teensy HID afterwards to overwrite key definitions if used
-// TODO include Teensy API if non english keyboard layout was used
+void DigitizerAPI::end(void){
+	_touch = 0;
+	moveTo(xAxis, yAxis, 0);
+}
+
+void DigitizerAPI::click(uint8_t t){
+	_touch = t;
+	moveTo(xAxis, yAxis, t);
+	_touch = 0;
+	moveTo(xAxis, yAxis, 0);
+}
+
+void DigitizerAPI::moveTo(int x, int y, uint8_t t){
+	xAxis = x;
+	yAxis = y;
+	_touch = t;
+	HID_DigitizerReport_Data_t report;
+	report.touch = t;
+	report.xAxis = x;
+	report.yAxis = y;
+	SendReport(&report, sizeof(report));
+}
+
+void DigitizerAPI::press(){
+	_touch = TOUCH_ALL;
+	moveTo(xAxis, yAxis, _touch);
+}
+
+void DigitizerAPI::release(){
+	_touch = 0;
+	moveTo(xAxis, yAxis, _touch);
+}
+
+bool DigitizerAPI::isPressed(){
+	if (_touch == TOUCH_ALL)
+		return true;
+	return false;
+}
