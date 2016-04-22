@@ -53,6 +53,8 @@ THE SOFTWARE.
 #include "MultiReport/NKROKeyboard.h"
 #include "SingleReport/SingleDigitizer.h"
 #include "MultiReport/Digitizer.h"
+#include "SingleReport/SingleMultiTouch.h"
+#include "MultiReport/MultiTouch.h"
 
 // Include Teensy HID afterwards to overwrite key definitions if used
 // TODO include Teensy API if non english keyboard layout was used

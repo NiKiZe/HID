@@ -21,19 +21,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#include "Digitizer.h"
+#include "MultiTouch.h"
 
 
-static const uint8_t _hidMultiReportDescriptorDigitizer[] PROGMEM = {
-	/*  Digitizer */
+static const uint8_t _hidMultiReportDescriptorMultiTouch[] PROGMEM = {
+	/*  Multi touch Screen */
     0x05, 0x0D,                      /* USAGE_PAGE (Digitizer)	  54 */
-    0x09, 0x02,                      /* USAGE (Pen) */
+    0x09, 0x04,                      /* USAGE (Touch Screen) */
     0xA1, 0x01,                      /* COLLECTION (Application) */
-    0x85, HID_REPORTID_DIGITIZER,	 /*     REPORT_ID */
+    0x85, HID_REPORTID_MULTITOUCH,	 /*     REPORT_ID */
 
-	/* Finger tool */
-    0x09, 0x20,                     /*     Usage (Stylus) */
-    0xA1, 0x00,                     /*     Collection (Physical) */
+	/* Maximum contact count */
+    0x09, 0x55,                     /*   USAGE(Contact Count Maximum) */
+    0x25, 0x08,                     /*   LOGICAL_MAXIMUM (8) */
+    0xB1, 0x02,                     /*   FEATURE (Data,Var,Abs) */
+
+	/* Current contact count */
+    0x09, 0x54,                     /*   USAGE (Contact count) */
+    0x95, 0x01,                     /*   REPORT_COUNT(1) */
+    0x75, 0x08,                     /*   REPORT_SIZE (8) */
+    0x81, 0x02,                     /*   INPUT (Data,Var,Abs) */
+
+	/* Finger Collection */
+    0x09, 0x22,                     /*     Usage (Finger) */
+    0xA1, 0x02,                     /*     Collection (Logical) */
+
+	/* Finger identifier */
+    0x09, 0x51,                    //     USAGE (Contact Identifier)
+    0x75, 0x08,                    //     REPORT_SIZE (8)
+    0x95, 0x01,                    //     REPORT_COUNT (1)
+    0x81, 0x02,                    //     INPUT (Data,Var,Abs)
+
 	0x09, 0x42,                     /*     Usage (Tip Switch) */
 	0x09, 0x32,                     /*     USAGE (In Range) */
     0x15, 0x00,                     /*     LOGICAL_MINIMUM (0) */
@@ -47,8 +65,6 @@ static const uint8_t _hidMultiReportDescriptorDigitizer[] PROGMEM = {
 
 	/* X, Y */
     0x05, 0x01,                      /*     USAGE_PAGE (Generic Desktop) */
-	0x09, 0x01,                      /*     Usage (Pointer) */
-	0xA1, 0x00,                      /*     Collection (Physical) */
     0x09, 0x30,                      /*     USAGE (X) */
     0x09, 0x31,                      /*     USAGE (Y) */
 	0x16, 0x00, 0x00,				 /* 	Logical Minimum (0) */
@@ -60,23 +76,22 @@ static const uint8_t _hidMultiReportDescriptorDigitizer[] PROGMEM = {
 	0x95, 0x02,						 /* 	Report Count (2), */
 	0x81, 0x02,						 /* 	Input (Data, Variable, Absolute) */
 	0xc0,                            /* END_COLLECTION */ 
-	0xc0,                            /* END_COLLECTION */ 
 	
 	/* End */
     0xc0                            /* END_COLLECTION */ 
 };
 
-Digitizer_::Digitizer_(void) 
+MultiTouch_::MultiTouch_(void) 
 {
-	static HIDSubDescriptor node(_hidMultiReportDescriptorDigitizer, sizeof(_hidMultiReportDescriptorDigitizer));
+	static HIDSubDescriptor node(_hidMultiReportDescriptorMultiTouch, sizeof(_hidMultiReportDescriptorMultiTouch));
 	HID().AppendDescriptor(&node);
 }
 
 
-void Digitizer_::SendReport(void* data, int length)
+void MultiTouch_::SendReport(void* data, int length)
 {
-	HID().SendReport(HID_REPORTID_DIGITIZER, data, length);
+	HID().SendReport(HID_REPORTID_MULTITOUCH, data, length);
 }
 
-Digitizer_ Digitizer;
+MultiTouch_ MultiTouch;
 
