@@ -43,8 +43,8 @@ void MultiTouchAPI::end(void){
 }
 
 void MultiTouchAPI::click(uint8_t id){
-	_touch = t;
-	moveTo(xAxis, yAxis, numContacts, id, TOUCH_ALL);
+	_touch = TOUCH_ALL;
+	moveTo(xAxis, yAxis, id, TOUCH_ALL);
 	_touch = 0;
 	moveTo(xAxis, yAxis, id, 0);
 }

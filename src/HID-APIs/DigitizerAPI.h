@@ -23,7 +23,7 @@ THE SOFTWARE.
 
 // Include guard
 #pragma once
-// TODO:  Change digitizer to behave more like an absolute mouse.  They have buttons, and do not click on contact
+
 
 #include <Arduino.h>
 #include "HID-Settings.h"
