@@ -76,6 +76,10 @@ NKROKeyboard	KEYWORD1
 SingleNKROKeyboard	KEYWORD1
 AbsoluteMouse	KEYWORD1
 SingleAbsoluteMouse	KEYWORD1
+Digitizer			KEYWORD1
+SingleDigitizer 	KEYWORD1
+MultiTouch			KEYWORD1
+SingleMultiTouch	KEYWORD1
 
 #######################################
 # Constants (LITERAL1)
